@@ -11,6 +11,21 @@ export async function POST(req) {
     }
 
     try {
+         // Check if a user with the given email already exists
+        const existingUser = await prisma.user.findUnique({
+            where: { email },
+        });
+
+         // If the user already exists, do nothing and simply return a success response
+        if (existingUser) {
+            // You can return a message indicating the user exists, or just a success message.
+            return new Response(JSON.stringify({ message: 'User already exists' }), {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
+
+        // If the user does not exist, create the new user
         const user = await prisma.user.create({
             data: {
                 email,
