@@ -6,7 +6,9 @@ export default async function page() {
  const session = await auth()
  if(!session) return redirect('/login')
   return (
-   <div>page
+    <>
+      <div>
+<div>page
     
       <form
       action={async () => {
@@ -16,6 +18,10 @@ export default async function page() {
     >
       <button type="submit">signOut with Google</button>
     </form>
-    </div>
+    </div> 
+      </div>
+    </>
   )
 }
+
+

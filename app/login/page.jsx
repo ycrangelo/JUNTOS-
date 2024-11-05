@@ -3,11 +3,33 @@ import { signIn, auth } from "../../auth"
 import { redirect } from 'next/navigation'
 import { Button } from "@nextui-org/react";
 import { FcGoogle } from "react-icons/fc";
- 
+
+
 export default async function SignIn() {
- const session = await auth()
- console.log(session)
-  if(session) return redirect('/feeds')
+  const session = await auth()
+  console.log(session)
+  
+  async function createPost() {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/database/user/post/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            email: session.user.email,
+            name: session.user.name,
+        }),
+    });
+
+    const data = await response
+    console.log(data);
+}
+
+  // If session exists, store email and create post, then redirect
+  if (session) {
+    await createPost(); // Create the post
+    return redirect('/feeds'); // Redirect to the feeds page
+  }
   return (
     <>
       <div className="flex flex-col items-center gap-4 justify-center w-dvw min-h-dvh border border-red-800">

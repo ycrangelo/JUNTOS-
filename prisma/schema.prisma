@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = "mongodb+srv://angeloyocoryocor:angeloangeloangelo@cluster0.p13owno.mongodb.net/juntos?retryWrites=true&w=majority&appName=Cluster0"
+}
+model User {
+  id        String   @id @default(uuid()) @map("_id") // Unique user ID @map("_id")
+  email     String   @unique // Email must be unique for each user
+  name      String? // Optional name field, can be null
+  createdAt DateTime @default(now()) // Timestamp when user is created
+  updatedAt DateTime @updatedAt // Timestamp when user is last updated
+  posts     Post[] // One-to-many relation with Post model, each user can have many posts
+}
+
+model Post {
+  id        String   @id @default(uuid()) @map("_id") // Unique post ID @map("_id")
+  email     String // Email of the user who created the post
+  like      BigInt // Number of likes for the post
+  pic       String?
+  createdAt DateTime @default(now()) // Timestamp when post is created
+  updatedAt DateTime @updatedAt // Timestamp when post is last updated
+
+  // Define the relation between Post and User using the email field
+  user User @relation(fields: [email], references: [email]) // Foreign key relation via email
+}
