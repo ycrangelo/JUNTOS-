@@ -32,7 +32,7 @@ export default async function SignIn() {
   }
   return (
     <>
-      <div className="flex flex-col items-center gap-4 justify-center ">
+      <div className="min-w-max min-h-screen flex flex-col items-center gap-4 justify-center ">
         <div className="flex flex-col items-center">
           <h1 className="font-bold text-9xl">
             JUNTOS

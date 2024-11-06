@@ -1,6 +1,8 @@
 import React from 'react'
 import {auth, signOut} from'../../auth'
 import { redirect } from 'next/navigation'
+import Navbar from '../../component/Navbar'
+import Userfyp from '../../component/Userfyp'
 export default async function page() {
  
  const session = await auth()
@@ -8,8 +10,9 @@ export default async function page() {
   return (
     <>
       <div className='min-w-max min-h-screen flex items-center justify-center'>
-      <div className='w-[60%] min-h-screen  border border-red-800'>
-      
+      <div className='lg:w-[60%] min-h-screen w-screen border-x'>
+          <Navbar />
+          <Userfyp/>
       </div>
       </div>
     </>
