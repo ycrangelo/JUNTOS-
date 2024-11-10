@@ -1,11 +1,9 @@
-import React from 'react'
-import {User} from "@nextui-org/react";
-import { signOut, auth } from "../auth"
-import {Button} from "@nextui-org/react";
+import { Button, User } from "@nextui-org/react";
+import { auth, signOut } from "../auth";
 
 export default async function Navbar() {
  const session = await auth()
- const userAvatar = await session.user?.image
+const userAvatar =await String(session.user?.image);
  const userName = await session.user?.name
  console.log(userAvatar)
   return (
@@ -14,7 +12,7 @@ export default async function Navbar() {
      <User   
       name={userName}
       avatarProps={{
-        src: {userAvatar}
+        src:userAvatar
       }}
      />
      <div>

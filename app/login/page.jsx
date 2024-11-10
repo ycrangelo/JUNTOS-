@@ -34,7 +34,7 @@ export default async function SignIn() {
     <>
       <div className="min-w-max min-h-screen flex flex-col items-center gap-4 justify-center ">
         <div className="flex flex-col items-center">
-          <h1 className="font-bold text-9xl">
+          <h1 className="font-bold lg:text-9xl text-[4rem] ">
             JUNTOS
           </h1>
           <p className="font-light">Where Every Connection Matters.</p>

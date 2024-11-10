@@ -18,7 +18,7 @@ model User {
 model Post {
   id        String   @id @default(uuid()) @map("_id") // Unique post ID @map("_id")
   email     String // Email of the user who created the post
-  like      BigInt // Number of likes for the post
+  likes      BigInt  @default(0)// Number of likes for the post
   pic       String?
   createdAt DateTime @default(now()) // Timestamp when post is created
   updatedAt DateTime @updatedAt // Timestamp when post is last updated
