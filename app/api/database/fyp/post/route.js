@@ -1,24 +1,43 @@
 import prisma from '../../../../../utils/connect';
 
-export default async function handler(req, res) {
-  if (req.method === 'POST') {
-    const { email, pic } = req.body;
+export async function POST(req) {
+    const { email, pic } = await req.json();
+
+    if (!email) {
+        return new Response(JSON.stringify({ error: 'Email is required' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
 
     try {
-      // Create a new post
-      const post = await prisma.post.create({
-        data: {
-          email,        // Email of the user creating the post
-          pic,          // Picture URL (optional)
-          likes: 0,     // Set likes to 0 by default
-        },
-      });
-      return res.status(201).json(post); // Respond with the newly created post
+        // Create a new post
+        const post = await prisma.post.create({
+            data: {
+                email,
+                pic, // Optional field, can be null
+            },
+        });
+
+        return new Response(JSON.stringify(post), {
+            status: 201,
+            headers: { 'Content-Type': 'application/json' },
+        });
     } catch (error) {
-      console.error('Error creating post:', error);
-      return res.status(500).json({ error: 'Failed to create post' });
+        console.error(error);
+        return new Response(JSON.stringify({ error: 'Failed to create post' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+        });
     }
-  } else {
-    return res.status(405).json({ error: 'Method not allowed' }); // If method is not POST
-  }
+}
+
+// Handle OPTIONS method
+export async function OPTIONS() {
+    return new Response(null, {
+        status: 200,
+        headers: {
+            Allow: 'POST',
+        },
+    });
 }

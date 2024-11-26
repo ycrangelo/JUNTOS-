@@ -1,5 +1,5 @@
 import { Button, User } from "@nextui-org/react";
-import { auth, signOut } from "../auth";
+import { auth, signOut } from "../../auth";
 
 export default async function Navbar() {
  const session = await auth()

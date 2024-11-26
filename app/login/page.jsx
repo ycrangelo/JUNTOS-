@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation'
 import { Button } from "@nextui-org/react";
 import { FcGoogle } from "react-icons/fc";
 
-
 export default async function SignIn() {
   const session = await auth()
   console.log(session)

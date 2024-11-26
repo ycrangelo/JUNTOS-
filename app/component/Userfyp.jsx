@@ -8,7 +8,7 @@ const UserfypClient = dynamic(() => import('./UserfypClient'), { ssr: false });
 export default function Userfyp  () {
   return (
    
-    <div className='w-auto lg:border  border-black flex justify-center '>
+    <div className='w-auto flex justify-center '>
     <UserfypClient />
     </div>
 
