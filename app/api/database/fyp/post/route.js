@@ -1,7 +1,7 @@
 import prisma from '../../../../../utils/connect';
 
 export async function POST(req) {
-    const { email, pic } = await req.json();
+    const { email, pic,caption } = await req.json();
 
     if (!email) {
         return new Response(JSON.stringify({ error: 'Email is required' }), {
@@ -16,6 +16,7 @@ export async function POST(req) {
             data: {
                 email,
                 pic, // Optional field, can be null
+                caption,
             },
         });
 

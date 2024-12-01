@@ -6,6 +6,7 @@ datasource db {
   provider = "mongodb"
   url      = "mongodb+srv://angeloyocoryocor:angeloangeloangelo@cluster0.p13owno.mongodb.net/juntos?retryWrites=true&w=majority&appName=Cluster0"
 }
+
 model User {
   id        String   @id @default(uuid()) @map("_id") // Unique user ID @map("_id")
   email     String   @unique // Email must be unique for each user
@@ -18,8 +19,9 @@ model User {
 model Post {
   id        String   @id @default(uuid()) @map("_id") // Unique post ID @map("_id")
   email     String // Email of the user who created the post
-  likes      BigInt  @default(0)// Number of likes for the post
+  likes     Int   @default(0) // Number of likes for the post
   pic       String?
+  caption   String
   createdAt DateTime @default(now()) // Timestamp when post is created
   updatedAt DateTime @updatedAt // Timestamp when post is last updated
 

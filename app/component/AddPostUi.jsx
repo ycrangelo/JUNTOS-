@@ -11,7 +11,11 @@ export default function AddPostUi({ email }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [backdrop, setBackdrop] = useState('blur');
   const [fileUrl, setFileUrl] = useState(null); 
+  const [caption, setCaption] = useState('');
 
+const handleInputChange = (e) => {
+        setCaption(e.target.value); // Update the state with the input value
+    };
   const createPost = async () => {
     console.log(`Creating post for ${email}`);
 
@@ -19,6 +23,7 @@ export default function AddPostUi({ email }) {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/post`, {
         email,
         pic: fileUrl, // Ensure you're using 'pic' to match the backend
+        caption:caption
       }, {
         headers: {
           'Content-Type': 'application/json',
@@ -26,11 +31,15 @@ export default function AddPostUi({ email }) {
       });
 
       console.log('Post created:', response.data);
+         setCaption('')
+      setFileUrl('')
+       onOpenChange(false)
       return response.data;
     } catch (error) {
       console.error('Error creating post:', error.response?.data || error.message);
       throw error; 
     }
+
   };
 
 
@@ -54,6 +63,8 @@ export default function AddPostUi({ email }) {
                 label="Caption"
                 placeholder="Enter a caption for your photo"
                 variant="bordered"
+                  value={caption} // Bind the state value to the input
+                onChange={handleInputChange} // Handle input change
               />
               <div className="mt-4">
                 {!fileUrl && (
