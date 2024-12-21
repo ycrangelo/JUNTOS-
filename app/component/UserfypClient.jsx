@@ -2,6 +2,7 @@
 "use client"
 import { Image } from "@nextui-org/react";
 import { useEffect, useState } from 'react';
+import {User} from "@nextui-org/react";
 
 export default function UserfypClient() {
   const [windowWidth, setWindowWidth] = useState(null);
@@ -21,9 +22,16 @@ export default function UserfypClient() {
 
   return (
     <div className="w-auto lg:w-full flex justify-center">
-      <div className=" m-5">
+      <div className=" m-5 border rounded-md p-5">
         <div className="flex flex-col gap-[0.3rem]">
-           <h1 className="font-semibold lg:text-3xl text-4xl">yocorangelo18@gmail.com</h1>
+          <div className="">
+             <User
+      avatarProps={{
+        src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
+      }}
+      name="Jane Doe"
+    />
+           </div>
         <p>this is the caption</p>
        </div>
          <Image
@@ -32,7 +40,23 @@ export default function UserfypClient() {
         width={isMobile ? 300 : 500}
         height={isMobile ? 200 : 300}
         objectFit="cover"
-      />
+        />
+        <div className=" ml-1 pt-2 flex flex-row gap-2 ">
+                <Image
+            src="/image/not-fill-heart.png"
+            alt="Like"
+            width={24}
+            height={24}
+            className="w-5 h-3 cursor-pointer mx-1"
+          />
+          <Image
+            src="/image/comments.png"
+            alt="Like"
+            width={24}
+            height={24}
+            className="w-5 h-4 cursor-pointer mx-1"
+          />
+        </div>
      </div>
     </div>
   );
