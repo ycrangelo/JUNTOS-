@@ -10,7 +10,7 @@ const userAvatar =await String(session.user?.image);
  console.log(userAvatar)
   return (
    <>
-    <div className='w-auto border-b lg:p-3 p-2 flex justify-between'>
+    <div className='w-auto sticky top-0 border-b lg:p-3 p-2 flex justify-between'>
        
         <Popover
           backdrop="blur"
