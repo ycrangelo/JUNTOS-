@@ -19,9 +19,6 @@ export default function UserfypClient() {
     const [scrollBehavior, setScrollBehavior] = useState("inside");
     const [backdrop, setBackdrop] = useState("blur");
     const [posts, setPosts] = useState([]);
-    const [initialPostCount, setInitialPostCount] = useState(0);
-    const [newPosts, setNewPosts] = useState([]);
-    const [totalPosts, setTotalPosts] = useState(0);
 
     // Function to fetch posts
     const fetchPosts = async () => {
@@ -29,24 +26,14 @@ export default function UserfypClient() {
             const response = await axios.get(
                 `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/get/`
             );
-            console.log("Fetched posts:", response.data);
-
             const fetchedPosts = response.data;
-            const fetchedPostCount = fetchedPosts.length;
 
-            // Initial fetch: Save posts and count
-            if (initialPostCount === 0) {
-                setPosts(fetchedPosts); // Set initial posts
-                setInitialPostCount(fetchedPostCount); // Set the initial post count
-                setTotalPosts(fetchedPostCount); // Set the initial total post count
-            } else {
-                // Check if new posts are available
-                if (fetchedPostCount > totalPosts) {
-                    const newPosts = fetchedPosts.slice(totalPosts); // Get the newly added posts
-                    setNewPosts((prevNewPosts) => [...prevNewPosts, ...newPosts]); // Store new posts
-                    setTotalPosts(fetchedPostCount); // Update the total post count
-                }
-            }
+            // Avoid duplication by checking for unique IDs
+            setPosts((prevPosts) => {
+                const existingIds = new Set(prevPosts.map((post) => post.id));
+                const newUniquePosts = fetchedPosts.filter((post) => !existingIds.has(post.id));
+                return [...prevPosts, ...newUniquePosts];
+            });
         } catch (error) {
             console.error(
                 "Error fetching posts:",
@@ -68,8 +55,11 @@ export default function UserfypClient() {
         handleResize(); // Update windowWidth on mount
         window.addEventListener("resize", handleResize);
 
-        return () => window.removeEventListener("resize", handleResize); // Cleanup
-    }, [totalPosts]); // Depend on totalPosts so it fetches again only when the total posts change
+        return () => {
+            clearInterval(intervalId); // Cleanup polling interval
+            window.removeEventListener("resize", handleResize); // Cleanup event listener
+        };
+    }, []); // Empty dependency array ensures it runs only once
 
     if (windowWidth === null) return null; // Wait until windowWidth is set
 
@@ -97,61 +87,9 @@ export default function UserfypClient() {
     const isMobile = windowWidth <= 768;
 
     return (
-        <div className="flex flex-col items-center min-h-screen">
+        <div className="flex flex-col items-center min-h-screen mb-[4rem]">
             <div className="w-full max-w-screen-sm lg:max-w-screen-md flex flex-col gap-5">
-                {/* Display initial posts */}
                 {posts.map((post) => (
-                    <div key={post.id} className="border rounded-md bg-white shadow-sm p-3">
-                        <div className="flex flex-col gap-1">
-                            <div>
-                                <User
-                                    avatarProps={{
-                                        src: "https://i.pravatar.cc/150?u=a04258114e29026702d", // Replace with user avatar if available
-                                    }}
-                                    name={post.email || "Anonymous"}
-                                />
-                            </div>
-                            <p className="text-gray-700">
-                                {post.caption || "No caption provided"}
-                            </p>
-                        </div>
-                        {post.pic ? (
-                            <Image
-                                src={post.pic}
-                                alt="Post image"
-                                className="rounded-md w-full max-h-[400px] lg:max-h-[600px] object-cover"
-                                layout="responsive"
-                                width={500}
-                                height={300}
-                                objectFit="cover"
-                                onError={() => console.log("Image failed to load")}
-                            />
-                        ) : (
-                            <p className="text-gray-500 italic">No image available</p>
-                        )}
-                        <div className="pt-2 flex flex-row gap-2">
-                            <Image
-                                src="/image/not-fill-heart.png"
-                                alt="Like icon"
-                                width={24}
-                                height={24}
-                                className="cursor-pointer"
-                                onClick={() => handleLikePost(post.id)}
-                            />
-                            <Image
-                                src="/image/comments.png"
-                                onClick={() => handleOpen("blur")}
-                                alt="Comments icon"
-                                width={24}
-                                height={24}
-                                className="cursor-pointer"
-                            />
-                        </div>
-                    </div>
-                ))}
-
-                {/* Display only new posts */}
-                {newPosts.map((post) => (
                     <div key={post.id} className="border rounded-md bg-white shadow-sm p-3">
                         <div className="flex flex-col gap-1">
                             <div>
