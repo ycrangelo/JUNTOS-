@@ -71,7 +71,7 @@ export default function UserfypClient() {
     const handleLikePost = async (postId) => {
         try {
             await axios.post(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/like/`,
+                `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/likepost/`,
                 {postId}
             );
             console.log(`Post ${postId} liked!`);
@@ -83,11 +83,25 @@ export default function UserfypClient() {
             );
         }
     };
-
+    const handleUnlikePost = async (postId) => {
+        try {
+            await axios.post(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/unlikepost/`,
+                {postId}
+            )
+            console.log(`Post ${postId} unliked!`);
+            await fetchPosts(); // Fetch the updated posts after liking
+        } catch (error) {
+            console.error(
+                "Error unliking the post:",
+                error.response ? error.response.data : error.message
+            )
+        }
+    }
     const isMobile = windowWidth <= 768;
 
     return (
-        <div className="flex flex-col items-center min-h-screen mb-[4rem]">
+        <div className="flex flex-col items-center min-h-screen mb-[6rem]">
             <div className="w-full max-w-screen-sm lg:max-w-screen-md flex flex-col gap-5">
                 {posts.map((post) => (
                     <div key={post.id} className="border rounded-md bg-white shadow-sm p-3">
@@ -119,13 +133,22 @@ export default function UserfypClient() {
                             <p className="text-gray-500 italic">No image available</p>
                         )}
                         <div className="pt-2 flex flex-row gap-2">
+                            <p>{post.likes}</p>
                             <Image
-                                src="/image/not-fill-heart.png"
+                                src={
+                                    post.isLiked
+                                        ? "/image/fill-heart.png" // Display a filled heart if liked
+                                        : "/image/not-fill-heart.png" // Display an empty heart if not liked
+                                }
                                 alt="Like icon"
                                 width={24}
                                 height={24}
                                 className="cursor-pointer"
-                                onClick={() => handleLikePost(post.id)}
+                                onClick={() =>
+                                    post.isLiked
+                                        ? handleUnlikePost(post.id) // Unlike the post
+                                        : handleLikePost(post.id)  // Like the post
+                                }
                             />
                             <Image
                                 src="/image/comments.png"
