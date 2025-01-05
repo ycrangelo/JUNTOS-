@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import {useEffect, useState} from "react";
 import {User, Input} from "@nextui-org/react";
@@ -28,7 +28,6 @@ export default function UserfypClient() {
             );
             const fetchedPosts = response.data;
 
-            // Avoid duplication by checking for unique IDs
             setPosts((prevPosts) => {
                 const existingIds = new Set(prevPosts.map((post) => post.id));
                 const newUniquePosts = fetchedPosts.filter((post) => !existingIds.has(post.id));
@@ -41,33 +40,6 @@ export default function UserfypClient() {
             );
         }
     };
-
-    useEffect(() => {
-        fetchPosts(); // Initial fetch
-
-        // Polling to fetch new posts every 5 seconds
-        const intervalId = setInterval(() => {
-            fetchPosts();
-        }, 5000); // Fetch every 5 seconds
-
-        // Handle window resizing
-        const handleResize = () => setWindowWidth(window.innerWidth);
-        handleResize(); // Update windowWidth on mount
-        window.addEventListener("resize", handleResize);
-
-        return () => {
-            clearInterval(intervalId); // Cleanup polling interval
-            window.removeEventListener("resize", handleResize); // Cleanup event listener
-        };
-    }, []); // Empty dependency array ensures it runs only once
-
-    if (windowWidth === null) return null; // Wait until windowWidth is set
-
-    const handleOpen = (backdrop) => {
-        setBackdrop(backdrop);
-        onOpen();
-    };
-
     const handleLikePost = async (postId) => {
         try {
             await axios.post(
@@ -83,21 +55,31 @@ export default function UserfypClient() {
             );
         }
     };
-    const handleUnlikePost = async (postId) => {
-        try {
-            await axios.post(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/unlikepost/`,
-                {postId}
-            )
-            console.log(`Post ${postId} unliked!`);
-            await fetchPosts(); // Fetch the updated posts after liking
-        } catch (error) {
-            console.error(
-                "Error unliking the post:",
-                error.response ? error.response.data : error.message
-            )
-        }
-    }
+
+    useEffect(() => {
+        fetchPosts();
+
+        const intervalId = setInterval(() => {
+            fetchPosts();
+        }, 5000); // Poll every 5 seconds
+
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        handleResize();
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            clearInterval(intervalId);
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
+    if (windowWidth === null) return null;
+
+    const handleOpen = (backdrop) => {
+        setBackdrop(backdrop);
+        onOpen();
+    };
+
     const isMobile = windowWidth <= 768;
 
     return (
@@ -109,7 +91,7 @@ export default function UserfypClient() {
                             <div>
                                 <User
                                     avatarProps={{
-                                        src: "https://i.pravatar.cc/150?u=a04258114e29026702d", // Replace with user avatar if available
+                                        src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
                                     }}
                                     name={post.email || "Anonymous"}
                                 />
@@ -132,23 +114,15 @@ export default function UserfypClient() {
                         ) : (
                             <p className="text-gray-500 italic">No image available</p>
                         )}
-                        <div className="pt-2 flex flex-row gap-2">
+                        <div className="pt-2 flex flex-row gap-2 items-center">
                             <p>{post.likes}</p>
                             <Image
-                                src={
-                                    post.isLiked
-                                        ? "/image/fill-heart.png" // Display a filled heart if liked
-                                        : "/image/not-fill-heart.png" // Display an empty heart if not liked
-                                }
+                                src="/image/not-fill-heart.png"
                                 alt="Like icon"
                                 width={24}
                                 height={24}
                                 className="cursor-pointer"
-                                onClick={() =>
-                                    post.isLiked
-                                        ? handleUnlikePost(post.id) // Unlike the post
-                                        : handleLikePost(post.id)  // Like the post
-                                }
+                                onClick={handleLikePost(post.id)}
                             />
                             <Image
                                 src="/image/comments.png"
