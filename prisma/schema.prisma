@@ -8,23 +8,36 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid()) @map("_id") // Unique user ID @map("_id")
-  email     String   @unique // Email must be unique for each user
-  name      String? // Optional name field, can be null
-  createdAt DateTime @default(now()) // Timestamp when user is created
-  updatedAt DateTime @updatedAt // Timestamp when user is last updated
-  posts     Post[] // One-to-many relation with Post model, each user can have many posts
+  id        String     @id @default(uuid()) @map("_id") // Unique user ID mapped to MongoDB's _id
+  email     String     @unique // Unique email for the user, also used as a foreign key in related models
+  name      String? // Optional field to store the user's name
+  createdAt DateTime   @default(now()) // Auto-generated timestamp for when the user was created
+  updatedAt DateTime   @updatedAt // Auto-updated timestamp for the last update to the user record
+  posts     Post[] // One-to-many relationship; a user can have multiple posts
+  comments  Comments[] // One-to-many relationship; a user can make multiple comments
 }
 
 model Post {
-  id        String   @id @default(uuid()) @map("_id") // Unique post ID @map("_id")
-  email     String // Email of the user who created the post
-  likes     Int   @default(0) // Number of likes for the post
-  pic       String?
-  caption   String
-  createdAt DateTime @default(now()) // Timestamp when post is created
-  updatedAt DateTime @updatedAt // Timestamp when post is last updated
+  id        String     @id @default(uuid()) @map("_id") // Unique post ID mapped to MongoDB's _id
+  email     String // Email of the user who created the post, serves as a foreign key to the User model
+  likes     Int        @default(0) // Counter for likes on the post, defaults to 0
+  pic       String? // Optional field for storing the URL or path of an image associated with the post
+  caption   String // Text caption for the post
+  createdAt DateTime   @default(now()) // Auto-generated timestamp for when the post was created
+  updatedAt DateTime   @updatedAt // Auto-updated timestamp for the last update to the post
+  comments  Comments[] // One-to-many relationship; a post can have multiple comments
 
-  // Define the relation between Post and User using the email field
-  user User @relation(fields: [email], references: [email]) // Foreign key relation via email
+  user User @relation(fields: [email], references: [email]) // Relation to the User model via the email field
+}
+
+model Comments {
+  id        String   @id @default(uuid()) @map("_id") // Unique comment ID mapped to MongoDB's _id
+  postId    String // Foreign key to relate comment to a specific post
+  userId    String // Foreign key to relate comment to a specific user
+  comment   String // Content of the comment
+  createdAt DateTime @default(now()) // Auto-generated timestamp for when the comment was created
+  updatedAt DateTime @updatedAt // Auto-updated timestamp for the last update to the comment
+
+  post Post @relation(fields: [postId], references: [id]) // Relation to the Post model
+  user User @relation(fields: [userId], references: [id]) // Relation to the User model
 }

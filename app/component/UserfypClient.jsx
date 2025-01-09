@@ -40,35 +40,36 @@ export default function UserfypClient() {
             );
         }
     };
-    const handleLikePost = async (postId) => {
-        try {
-            await axios.post(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/likepost/`,
-                {postId}
-            );
-            console.log(`Post ${postId} liked!`);
-            await fetchPosts(); // Fetch the updated posts after liking
-        } catch (error) {
-            console.error(
-                "Error liking the post:",
-                error.response ? error.response.data : error.message
-            );
-        }
-    };
+    // const handleLikePost = async (postId) => {
+    //     try {
+    //         await axios.post(
+    //             `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/likepost/`,
+    //             {postId}
+    //         );
+    //         console.log(`Post ${postId} liked!`);
+    //         await fetchPosts(); // Fetch the updated posts after liking
+    //     } catch (error) {
+    //         console.error(
+    //             "Error liking the post:",
+    //             error.response ? error.response.data : error.message
+    //         );
+    //     }
+    // };
 
     useEffect(() => {
         fetchPosts();
 
-        const intervalId = setInterval(() => {
-            fetchPosts();
-        }, 5000); // Poll every 5 seconds
+        // const intervalId = setInterval(() => {
+        //     fetchPosts();
+        //     console.log(" polling")
+        // }, 5000); // Poll every 6 seconds
 
         const handleResize = () => setWindowWidth(window.innerWidth);
         handleResize();
         window.addEventListener("resize", handleResize);
 
         return () => {
-            clearInterval(intervalId);
+            // clearInterval(intervalId);
             window.removeEventListener("resize", handleResize);
         };
     }, []);
@@ -85,7 +86,7 @@ export default function UserfypClient() {
     return (
         <div className="flex flex-col items-center min-h-screen mb-[6rem]">
             <div className="w-full max-w-screen-sm lg:max-w-screen-md flex flex-col gap-5">
-                {posts.map((post) => (
+                {posts.slice().reverse().map((post) => (
                     <div key={post.id} className="border rounded-md bg-white shadow-sm p-3">
                         <div className="flex flex-col gap-1">
                             <div>
@@ -122,7 +123,7 @@ export default function UserfypClient() {
                                 width={24}
                                 height={24}
                                 className="cursor-pointer"
-                                onClick={handleLikePost(post.id)}
+                                // onClick={handleLikePost(post.id)}
                             />
                             <Image
                                 src="/image/comments.png"
@@ -150,7 +151,7 @@ export default function UserfypClient() {
                                 {"Comments"}
                             </ModalHeader>
                             <ModalBody>
-                                <p>Add your comments here...</p>
+                                //
                             </ModalBody>
                             <ModalFooter>
                                 <div className="flex w-full flex-wrap md:flex-nowrap items-center">
