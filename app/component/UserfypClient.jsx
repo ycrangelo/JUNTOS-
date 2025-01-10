@@ -1,5 +1,7 @@
 'use client';
 
+//try mo mag test ng POST comment bukas, pag gumana gawin mo yung GET comment
+
 import {useEffect, useState} from "react";
 import {User, Input} from "@nextui-org/react";
 import {Image} from "@nextui-org/react";
@@ -19,6 +21,12 @@ export default function UserfypClient() {
     const [scrollBehavior, setScrollBehavior] = useState("inside");
     const [backdrop, setBackdrop] = useState("blur");
     const [posts, setPosts] = useState([]);
+    const [getComment, getSetComments] = useState([]);
+    const [postComment, postSetComments] = useState([]);
+
+    const handleInputChange = (e) => {
+        postSetComments(e.target.value);//update the input
+    }
 
     // Function to fetch posts
     const fetchPosts = async () => {
@@ -40,6 +48,40 @@ export default function UserfypClient() {
             );
         }
     };
+
+    const fetchComments = async (postid) => {
+
+        try {
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/comments/get`,
+                {postid}
+            )
+            getSetComments(response.data);
+        } catch (e) {
+            console.error(e)
+        }
+    }
+    const handlePostComment = async (postId, userId,) => {
+        if (postComment.trim() === "") {
+            alert("Please enter a comment");
+            return
+        }
+        try {
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/comments/post`,
+                {
+                    postId,
+                    userId,
+                    postComment,
+                }
+            )
+            console.log(response.data)
+        } catch (e) {
+            console.error("Error submitting comment:", e)
+        }
+        postSetComments("");
+    }
+
     // const handleLikePost = async (postId) => {
     //     try {
     //         await axios.post(
@@ -84,7 +126,7 @@ export default function UserfypClient() {
     const isMobile = windowWidth <= 768;
 
     return (
-        <div className="flex flex-col items-center min-h-screen mb-[6rem]">
+        <div className="flex flex-col items-center min-h-screen mb-[6rem] mt-[4rem]">
             <div className="w-full max-w-screen-sm lg:max-w-screen-md flex flex-col gap-5">
                 {posts.slice().reverse().map((post) => (
                     <div key={post.id} className="border rounded-md bg-white shadow-sm p-3">
@@ -127,55 +169,77 @@ export default function UserfypClient() {
                             />
                             <Image
                                 src="/image/comments.png"
-                                onClick={() => handleOpen("blur")}
+                                onClick={() => {
+                                    handleOpen("blur")
+                                    fetchComments(post.id)
+                                }}
                                 alt="Comments icon"
                                 width={24}
                                 height={24}
                                 className="cursor-pointer"
+
                             />
                         </div>
+                        <Modal
+                            backdrop={backdrop}
+                            scrollBehavior={scrollBehavior}
+                            isOpen={isOpen}
+                            onClose={onClose}
+                        >
+                            <ModalContent>
+                                {(onClose) => (
+                                    <>
+                                        <ModalHeader className="flex flex-col gap-1">
+                                            {"Comments"}
+                                        </ModalHeader>
+                                        <ModalBody>
+                                            <div className="flex flex-col gap-2">
+                                                {post.comments && post.comments.length > 0 ? (
+                                                    post.comments.map((comment) => (
+                                                        <div key={comment.id} className="flex items-center gap-2">
+                                                            <User
+                                                                avatarProps={{
+                                                                    src: "https://i.pravatar.cc/150?u=" + comment.email,
+                                                                }}
+                                                                name={comment.email || "Anonymous"}
+                                                            />
+                                                            <p className="text-gray-700">{comment.content}</p>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <p className="text-gray-500 italic">No comments yet</p>
+                                                )}
+                                            </div>
+                                        </ModalBody>
+                                        <ModalFooter>
+                                            <div className="flex w-full flex-wrap md:flex-nowrap items-center">
+                                                <input
+                                                    value={postComment}
+                                                    onChange={(e) => handleInputChange(e.target.value)}
+                                                    type="text"
+                                                    placeholder="Write your comment"
+                                                    className="flex-1 border rounded px-2 py-1"
+                                                />
+                                                <div
+                                                    onClick={handlePostComment}
+                                                    className="flex justify-center items-center cursor-pointer"
+                                                >
+                                                    <img
+                                                        src="/image/commentsend.png"
+                                                        alt="Send Comment Icon"
+                                                        width={18}
+                                                        height={18}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </ModalFooter>
+                                    </>
+                                )}
+                            </ModalContent>
+                        </Modal>
                     </div>
                 ))}
             </div>
-
-            <Modal
-                backdrop={backdrop}
-                scrollBehavior={scrollBehavior}
-                isOpen={isOpen}
-                onClose={onClose}
-            >
-                <ModalContent>
-                    {(onClose) => (
-                        <>
-                            <ModalHeader className="flex flex-col gap-1">
-                                {"Comments"}
-                            </ModalHeader>
-                            <ModalBody>
-                                //
-                            </ModalBody>
-                            <ModalFooter>
-                                <div className="flex w-full flex-wrap md:flex-nowrap items-center">
-                                    <Input
-                                        label="Comments"
-                                        type="text"
-                                        className="flex-1"
-                                        placeholder="Write your comment"
-                                    />
-                                    <div className="flex justify-center items-center">
-                                        <Image
-                                            src="/image/commentsend.png"
-                                            alt="Send Comment Icon"
-                                            width={18}
-                                            height={18}
-                                            className="cursor-pointer"
-                                        />
-                                    </div>
-                                </div>
-                            </ModalFooter>
-                        </>
-                    )}
-                </ModalContent>
-            </Modal>
         </div>
     );
 }

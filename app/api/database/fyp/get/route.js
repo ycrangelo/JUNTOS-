@@ -3,8 +3,11 @@ import prisma from '../../../../../utils/connect';
 export async function GET(req) {
     try {
         // Retrieve all posts from the database
-        const posts = await prisma.post.findMany();
-
+        const posts = await prisma.post.findMany({
+            // include: {
+            //     comments: true, // Fetch comments related to each post
+            // },
+        });
         return new Response(JSON.stringify(posts), {
             status: 200,
             headers: {'Content-Type': 'application/json'},
