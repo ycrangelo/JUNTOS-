@@ -1,32 +1,32 @@
 import prisma from '../../../../../../utils/connect';
 
 export async function POST(req) {
-    const {postid, userid, comment} = await req.json();
-
-    // Validate input
-    if (!postid) {
-        return new Response(JSON.stringify({error: 'postid not found'}), {
-            status: 400,
-            headers: {'Content-Type': 'application/json'},
-        });
-    }
-    if (!userid) {
-        return new Response(JSON.stringify({error: 'userid not found'}), {
-            status: 400,
-            headers: {'Content-Type': 'application/json'},
-        });
-    }
-    if (!comment) {
-        return new Response(JSON.stringify({error: 'comment not found'}), {
-            status: 400,
-            headers: {'Content-Type': 'application/json'},
-        });
-    }
-
     try {
+        const {postId, userName, userImage, comment} = await req.json();
+
+        // Validate input
+        if (!postId) {
+            return new Response(JSON.stringify({error: 'postId not found'}), {
+                status: 400,
+                headers: {'Content-Type': 'application/json'},
+            });
+        }
+        if (!userName) {
+            return new Response(JSON.stringify({error: 'userName not found'}), {
+                status: 400,
+                headers: {'Content-Type': 'application/json'},
+            });
+        }
+        if (!comment) {
+            return new Response(JSON.stringify({error: 'comment not found'}), {
+                status: 400,
+                headers: {'Content-Type': 'application/json'},
+            });
+        }
+
         // Verify if post exists
         const postExists = await prisma.post.findUnique({
-            where: {id: postid},
+            where: {id: postId},
         });
         if (!postExists) {
             return new Response(JSON.stringify({error: 'Post not found'}), {
@@ -38,9 +38,10 @@ export async function POST(req) {
         // Create a new comment
         const newComment = await prisma.comments.create({
             data: {
-                postId: postid,
-                userId: userid,
-                comment: comment,
+                postId,
+                userName,
+                userImage,
+                comment
             },
         });
 
@@ -48,8 +49,8 @@ export async function POST(req) {
             status: 200,
             headers: {'Content-Type': 'application/json'},
         });
-    } catch (e) {
-        console.error(e);
+    } catch (error) {
+        console.error("Internal server error:", error);
         return new Response(JSON.stringify({error: 'Internal server error'}), {
             status: 500,
             headers: {'Content-Type': 'application/json'},
@@ -57,12 +58,11 @@ export async function POST(req) {
     }
 }
 
-// Handle OPTIONS method
 export async function OPTIONS() {
     return new Response(null, {
         status: 200,
         headers: {
-            Allow: 'POST',
+            Allow: 'POST, OPTIONS',
         },
     });
 }

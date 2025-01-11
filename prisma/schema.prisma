@@ -11,6 +11,7 @@ model User {
   id        String     @id @default(uuid()) @map("_id") // Unique user ID mapped to MongoDB's _id
   email     String     @unique // Unique email for the user, also used as a foreign key in related models
   name      String? // Optional field to store the user's name
+  userImage String // user pictire
   createdAt DateTime   @default(now()) // Auto-generated timestamp for when the user was created
   updatedAt DateTime   @updatedAt // Auto-updated timestamp for the last update to the user record
   posts     Post[] // One-to-many relationship; a user can have multiple posts
@@ -33,11 +34,12 @@ model Post {
 model Comments {
   id        String   @id @default(uuid()) @map("_id") // Unique comment ID mapped to MongoDB's _id
   postId    String // Foreign key to relate comment to a specific post
-  userId    String // Foreign key to relate comment to a specific user
+  userName  String // Foreign key to relate comment to a specific user
+  userImage String
   comment   String // Content of the comment
   createdAt DateTime @default(now()) // Auto-generated timestamp for when the comment was created
   updatedAt DateTime @updatedAt // Auto-updated timestamp for the last update to the comment
 
   post Post @relation(fields: [postId], references: [id]) // Relation to the Post model
-  user User @relation(fields: [userId], references: [id]) // Relation to the User model
+  user User @relation(fields: [userName], references: [id]) // Relation to the User model
 }

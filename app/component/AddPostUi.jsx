@@ -16,7 +16,7 @@ import {useState} from 'react';
 import {IoMdAddCircleOutline} from 'react-icons/io';
 import {UploadButton} from "../../utils/uploadthing";
 
-export default function AddPostUi({email}) {
+export default function AddPostUi({email, userImage}) {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const [backdrop, setBackdrop] = useState('blur');
     const [fileUrl, setFileUrl] = useState(null);

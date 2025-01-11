@@ -9,13 +9,15 @@ export default async function page() {
     const session = await auth()
     if (!session) return redirect('/login')
     const emailto = await session.user.name
+    const userImage = await session.user.image
     return (
         <>
             <div className='min-w-max min-h-screen flex items-center justify-center'>
                 <div className='lg:w-[60%] min-h-screen w-screen border-x'>
                     <Navbar/>
-                    <Userfyp/>
-                    <AddPostUi email={emailto}/>
+                    <Userfyp userImage={userImage} userName={emailto}/>
+                    // look here it haS NO USERIMAGE
+                    <AddPostUi email={emailto} userImage={userImage}/>
                 </div>
             </div>
         </>

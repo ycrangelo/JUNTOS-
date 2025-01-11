@@ -1,6 +1,7 @@
 'use client';
 
 //try mo mag test ng POST comment bukas, pag gumana gawin mo yung GET comment
+//gawin mong kita yung usernmae at userimage
 
 import {useEffect, useState} from "react";
 import {User, Input} from "@nextui-org/react";
@@ -14,19 +15,29 @@ import {
     ModalFooter,
     useDisclosure,
 } from "@nextui-org/react";
+import {auth} from '../../auth'
 
-export default function UserfypClient() {
+export default function UserfypClient({userImage, userName}) {
     const [windowWidth, setWindowWidth] = useState(null);
     const {isOpen, onOpen, onClose} = useDisclosure();
     const [scrollBehavior, setScrollBehavior] = useState("inside");
     const [backdrop, setBackdrop] = useState("blur");
     const [posts, setPosts] = useState([]);
     const [getComment, getSetComments] = useState([]);
-    const [postComment, postSetComments] = useState([]);
+    const [postComment, postSetComments] = useState("");
+
+    async function session() {
+        const session = await auth()
+        console.log(session)
+    }
+
+    session()
 
     const handleInputChange = (e) => {
-        postSetComments(e.target.value);//update the input
-    }
+        postSetComments(e.target.value);
+    };
+    console.log(`this is the username`, userName)
+
 
     // Function to fetch posts
     const fetchPosts = async () => {
@@ -49,6 +60,8 @@ export default function UserfypClient() {
         }
     };
 
+    //display the comments
+    //dito ka tingin
     const fetchComments = async (postid) => {
 
         try {
@@ -61,26 +74,29 @@ export default function UserfypClient() {
             console.error(e)
         }
     }
-    const handlePostComment = async (postId, userId,) => {
-        if (postComment.trim() === "") {
-            alert("Please enter a comment");
-            return
-        }
+
+    //handle the POST req
+    //nagana na to
+    const handlePostComment = async (postId) => {
         try {
-            const response = await axios.get(
+
+            const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/comments/post`,
                 {
                     postId,
-                    userId,
-                    postComment,
+                    userName,
+                    userImage,
+                    comment: postComment, // Ensure key matches backend expectations
                 }
-            )
-            console.log(response.data)
-        } catch (e) {
-            console.error("Error submitting comment:", e)
+            );
+            console.log("Comment posted successfully:", response.data);
+            alert("comment successfully send")
+        } catch (error) {
+            console.error("Error submitting comment:", error.response?.data || error.message);
+            alert("Pleast write a comment")
         }
-        postSetComments("");
-    }
+        postSetComments(""); // Clear input after posting
+    };
 
     // const handleLikePost = async (postId) => {
     //     try {
@@ -171,7 +187,7 @@ export default function UserfypClient() {
                                 src="/image/comments.png"
                                 onClick={() => {
                                     handleOpen("blur")
-                                    fetchComments(post.id)
+                                    // fetchComments(post.id)
                                 }}
                                 alt="Comments icon"
                                 width={24}
@@ -193,35 +209,36 @@ export default function UserfypClient() {
                                             {"Comments"}
                                         </ModalHeader>
                                         <ModalBody>
-                                            <div className="flex flex-col gap-2">
-                                                {post.comments && post.comments.length > 0 ? (
-                                                    post.comments.map((comment) => (
-                                                        <div key={comment.id} className="flex items-center gap-2">
-                                                            <User
-                                                                avatarProps={{
-                                                                    src: "https://i.pravatar.cc/150?u=" + comment.email,
-                                                                }}
-                                                                name={comment.email || "Anonymous"}
-                                                            />
-                                                            <p className="text-gray-700">{comment.content}</p>
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <p className="text-gray-500 italic">No comments yet</p>
-                                                )}
-                                            </div>
+                                            {/*<div className="flex flex-col gap-2">*/}
+                                            {/*    {post.comments && post.comments.length > 0 ? (*/}
+                                            {/*        post.comments.map((comment) => (*/}
+                                            {/*            <div key={comment.id} className="flex items-center gap-2">*/}
+                                            {/*                <User*/}
+                                            {/*                    avatarProps={{*/}
+                                            {/*                        src: "https://i.pravatar.cc/150?u=" + comment.email,*/}
+                                            {/*                    }}*/}
+                                            {/*                    name={comment.email || "Anonymous"}*/}
+                                            {/*                />*/}
+                                            {/*                <p className="text-gray-700">{comment.content}</p>*/}
+                                            {/*            </div>*/}
+                                            {/*        ))*/}
+                                            {/*    ) : (*/}
+                                            {/*        <p className="text-gray-500 italic">No comments yet</p>*/}
+                                            {/*    )}*/}
+                                            {/*</div>*/}
                                         </ModalBody>
                                         <ModalFooter>
                                             <div className="flex w-full flex-wrap md:flex-nowrap items-center">
                                                 <input
                                                     value={postComment}
-                                                    onChange={(e) => handleInputChange(e.target.value)}
+                                                    onChange={handleInputChange} // Pass the event directly
                                                     type="text"
                                                     placeholder="Write your comment"
                                                     className="flex-1 border rounded px-2 py-1"
                                                 />
                                                 <div
-                                                    onClick={handlePostComment}
+                                                    onClick={() => handlePostComment(post.id)}
+
                                                     className="flex justify-center items-center cursor-pointer"
                                                 >
                                                     <img
