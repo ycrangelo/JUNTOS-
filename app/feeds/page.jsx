@@ -16,7 +16,7 @@ export default async function page() {
                 <div className='lg:w-[60%] min-h-screen w-screen border-x'>
                     <Navbar/>
                     <Userfyp userImage={userImage} userName={emailto}/>
-                    // look here it haS NO USERIMAGE
+                    
                     <AddPostUi email={emailto} userImage={userImage}/>
                 </div>
             </div>

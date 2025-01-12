@@ -1,42 +1,49 @@
-import prisma from '../../../../../../utils/connect'
+import prisma from '../../../../../../utils/connect';
 
-export async function GET(req, res) {
-
-    const {postId} = req.json();//ge the userID
-
+export async function GET(req) {
     try {
-        if (postId) {
+        // Extract `postId` from query parameters
+        const url = new URL(req.url);
+        const postId = url.searchParams.get('postId');
+        console.log('Post ID received for fetching comments:', postId);
+
+        // Validate `postId`
+        if (!postId) {
             return new Response(
-                JSON.stringify({error: 'userid is req'}),
+                JSON.stringify({error: 'postId is required'}),
                 {
                     status: 400,
                     headers: {'content-type': 'application/json'},
                 }
-            )
+            );
         }
-        const comments = await prisma.comment.findMany({
-            where: {postId: postId}
-        })
+
+        const comments = await prisma.comments.findMany({
+            where: {postId: postId},
+        });
+        console.log('Comments fetched from database:', comments);
 
         return new Response(
-            JSON.stringify((comments), {
+            JSON.stringify(comments),
+            {
                 status: 200,
                 headers: {'content-type': 'application/json'},
-            })
-        )
+            }
+        );
     } catch (e) {
-        console.log('fetching in error', e)
+        console.error('Error fetching comments:', e);
 
         return new Response(
-            JSON.stringify({error: e}, {
+            JSON.stringify({error: 'Internal server error'}),
+            {
                 status: 500,
                 headers: {'content-type': 'application/json'},
-            })
-        )
+            }
+        );
     }
 }
 
-// Optionally handle other methods
+// Optionally handle OPTIONS
 export async function OPTIONS() {
     return new Response(null, {
         status: 200,

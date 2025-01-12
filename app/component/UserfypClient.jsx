@@ -1,7 +1,8 @@
 'use client';
 
-//try mo mag test ng POST comment bukas, pag gumana gawin mo yung GET comment
-//gawin mong kita yung usernmae at userimage
+//ok na yung POST and GET
+//ui nalang comments
+//then sa POst ng post ng user lagyan mo lang ng userImage
 
 import {useEffect, useState} from "react";
 import {User, Input} from "@nextui-org/react";
@@ -15,7 +16,7 @@ import {
     ModalFooter,
     useDisclosure,
 } from "@nextui-org/react";
-import {auth} from '../../auth'
+
 
 export default function UserfypClient({userImage, userName}) {
     const [windowWidth, setWindowWidth] = useState(null);
@@ -26,18 +27,10 @@ export default function UserfypClient({userImage, userName}) {
     const [getComment, getSetComments] = useState([]);
     const [postComment, postSetComments] = useState("");
 
-    async function session() {
-        const session = await auth()
-        console.log(session)
-    }
-
-    session()
 
     const handleInputChange = (e) => {
         postSetComments(e.target.value);
     };
-    console.log(`this is the username`, userName)
-
 
     // Function to fetch posts
     const fetchPosts = async () => {
@@ -46,6 +39,7 @@ export default function UserfypClient({userImage, userName}) {
                 `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/get/`
             );
             const fetchedPosts = response.data;
+            console.log(response.data)
 
             setPosts((prevPosts) => {
                 const existingIds = new Set(prevPosts.map((post) => post.id));
@@ -62,18 +56,21 @@ export default function UserfypClient({userImage, userName}) {
 
     //display the comments
     //dito ka tingin
-    const fetchComments = async (postid) => {
-
+    const fetchComments = async (postId) => {
         try {
+            console.log(postId)
             const response = await axios.get(
                 `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/comments/get`,
-                {postid}
-            )
+                {
+                    params: {postId},
+                }
+            );
             getSetComments(response.data);
+            console.log('These are the comments:', response.data);
         } catch (e) {
-            console.error(e)
+            console.error('Error fetching comments:', e);
         }
-    }
+    };
 
     //handle the POST req
     //nagana na to
@@ -186,14 +183,13 @@ export default function UserfypClient({userImage, userName}) {
                             <Image
                                 src="/image/comments.png"
                                 onClick={() => {
-                                    handleOpen("blur")
-                                    // fetchComments(post.id)
+                                    handleOpen("blur");
+                                    fetchComments(post.id);
                                 }}
                                 alt="Comments icon"
                                 width={24}
                                 height={24}
                                 className="cursor-pointer"
-
                             />
                         </div>
                         <Modal
@@ -237,7 +233,10 @@ export default function UserfypClient({userImage, userName}) {
                                                     className="flex-1 border rounded px-2 py-1"
                                                 />
                                                 <div
-                                                    onClick={() => handlePostComment(post.id)}
+                                                    onClick={() => {
+
+                                                        handlePostComment(post.id)
+                                                    }}
 
                                                     className="flex justify-center items-center cursor-pointer"
                                                 >

@@ -9,7 +9,7 @@ export default function Userfyp({userImage, userName}) {
     return (
 
         <div className='w-auto flex justify-center '>
-            <UserfypClient userimage={userImage} usaername={userName}/>
+            <UserfypClient userImage={userImage} userName={userName}/>
         </div>
 
     )
