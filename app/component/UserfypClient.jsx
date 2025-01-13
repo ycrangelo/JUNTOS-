@@ -1,8 +1,6 @@
 'use client';
 
-//ok na yung POST and GET
-//ui nalang comments
-//then sa POst ng post ng user lagyan mo lang ng userImage
+// do the likes POST and GET, also the UI of those
 
 import {useEffect, useState} from "react";
 import {User, Input} from "@nextui-org/react";
@@ -205,23 +203,38 @@ export default function UserfypClient({userImage, userName}) {
                                             {"Comments"}
                                         </ModalHeader>
                                         <ModalBody>
-                                            {/*<div className="flex flex-col gap-2">*/}
-                                            {/*    {post.comments && post.comments.length > 0 ? (*/}
-                                            {/*        post.comments.map((comment) => (*/}
-                                            {/*            <div key={comment.id} className="flex items-center gap-2">*/}
-                                            {/*                <User*/}
-                                            {/*                    avatarProps={{*/}
-                                            {/*                        src: "https://i.pravatar.cc/150?u=" + comment.email,*/}
-                                            {/*                    }}*/}
-                                            {/*                    name={comment.email || "Anonymous"}*/}
-                                            {/*                />*/}
-                                            {/*                <p className="text-gray-700">{comment.content}</p>*/}
-                                            {/*            </div>*/}
-                                            {/*        ))*/}
-                                            {/*    ) : (*/}
-                                            {/*        <p className="text-gray-500 italic">No comments yet</p>*/}
-                                            {/*    )}*/}
-                                            {/*</div>*/}
+                                            <div className="flex flex-col gap-2">
+                                                {getComment.length > 0 ? (
+                                                    getComment
+                                                        .slice()
+                                                        .reverse()
+                                                        .map((comment) => (
+                                                            <div
+                                                                key={comment.id}
+                                                                className="flex items-center justify-between gap-2 border-y-1 p-2"
+                                                            >
+                                                                <div className="flex items-center gap-2">
+                                                                    <User
+                                                                        avatarProps={{
+                                                                            src: comment.userImage,
+                                                                        }}
+                                                                        name={
+                                                                            <strong>{comment.userName || "Anonymous"}</strong>}
+                                                                    />
+                                                                    <p className="text-gray-700">{comment.comment}</p>
+                                                                </div>
+                                                                <p className="text-gray-500 text-[.6rem]">
+                                                                    {new Intl.DateTimeFormat('en-US', {
+                                                                        month: 'long',
+                                                                        day: 'numeric',
+                                                                    }).format(new Date(comment.updatedAt))}
+                                                                </p>
+                                                            </div>
+                                                        ))
+                                                ) : (
+                                                    <p className="text-gray-500 italic">No comments yet</p>
+                                                )}
+                                            </div>
                                         </ModalBody>
                                         <ModalFooter>
                                             <div className="flex w-full flex-wrap md:flex-nowrap items-center">
@@ -234,7 +247,7 @@ export default function UserfypClient({userImage, userName}) {
                                                 />
                                                 <div
                                                     onClick={() => {
-
+                                                        onClose()
                                                         handlePostComment(post.id)
                                                     }}
 
