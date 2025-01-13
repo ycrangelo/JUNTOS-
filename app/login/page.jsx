@@ -21,7 +21,7 @@ export default async function SignIn() {
         });
 
         const data = await response
-        console.log(data);
+
     }
 
     // If session exists, store email and create post, then redirect

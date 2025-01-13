@@ -1,6 +1,7 @@
 'use client';
 
 // do the likes POST and GET, also the UI of those
+//fix mo muna pala yung bug sa comment, ayaw mag comment sa iba
 
 import {useEffect, useState} from "react";
 import {User, Input} from "@nextui-org/react";
@@ -24,6 +25,7 @@ export default function UserfypClient({userImage, userName}) {
     const [posts, setPosts] = useState([]);
     const [getComment, getSetComments] = useState([]);
     const [postComment, postSetComments] = useState("");
+    const [showToast, setShowToast] = useState(false); // State for toast
 
 
     const handleInputChange = (e) => {
@@ -37,7 +39,7 @@ export default function UserfypClient({userImage, userName}) {
                 `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/get/`
             );
             const fetchedPosts = response.data;
-            console.log(response.data)
+
 
             setPosts((prevPosts) => {
                 const existingIds = new Set(prevPosts.map((post) => post.id));
@@ -63,8 +65,10 @@ export default function UserfypClient({userImage, userName}) {
                     params: {postId},
                 }
             );
+
             getSetComments(response.data);
             console.log('These are the comments:', response.data);
+
         } catch (e) {
             console.error('Error fetching comments:', e);
         }
@@ -84,8 +88,15 @@ export default function UserfypClient({userImage, userName}) {
                     comment: postComment, // Ensure key matches backend expectations
                 }
             );
-            console.log("Comment posted successfully:", response.data);
-            alert("comment successfully send")
+            if (response) {
+                setShowToast(true); // Show toast on success
+
+
+            }
+
+            setTimeout(() => setShowToast(false), 3000); // Hide after 3 seconds
+
+
         } catch (error) {
             console.error("Error submitting comment:", error.response?.data || error.message);
             alert("Pleast write a comment")
@@ -112,10 +123,10 @@ export default function UserfypClient({userImage, userName}) {
     useEffect(() => {
         fetchPosts();
 
-        // const intervalId = setInterval(() => {
-        //     fetchPosts();
-        //     console.log(" polling")
-        // }, 5000); // Poll every 6 seconds
+        const intervalId = setInterval(() => {
+            fetchPosts();
+            console.log(" polling")
+        }, 5000); // Poll every 6 seconds
 
         const handleResize = () => setWindowWidth(window.innerWidth);
         handleResize();
@@ -137,8 +148,15 @@ export default function UserfypClient({userImage, userName}) {
     const isMobile = windowWidth <= 768;
 
     return (
-        <div className="flex flex-col items-center min-h-screen mb-[6rem] mt-[4rem]">
+        <div className="flex flex-col items-center min-h-screen mb-[4rem] mt-[2rem]">
             <div className="w-full max-w-screen-sm lg:max-w-screen-md flex flex-col gap-5">
+                {/* Toast Notification */}
+                {showToast && (
+                    <div
+                        className="absolute top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded shadow-md transition-opacity duration-300">
+                        Comment posted successfully!
+                    </div>
+                )}
                 {posts.slice().reverse().map((post) => (
                     <div key={post.id} className="border rounded-md bg-white shadow-sm p-3">
                         <div className="flex flex-col gap-1">
@@ -211,7 +229,8 @@ export default function UserfypClient({userImage, userName}) {
                                                         .map((comment) => (
                                                             <div
                                                                 key={comment.id}
-                                                                className="flex items-center justify-between gap-2 border-y-1 p-2"
+
+                                                                className="flex verflow-y-scroll items-center justify-between gap-2 border-y-1 p-2"
                                                             >
                                                                 <div className="flex items-center gap-2">
                                                                     <User
@@ -221,7 +240,7 @@ export default function UserfypClient({userImage, userName}) {
                                                                         name={
                                                                             <strong>{comment.userName || "Anonymous"}</strong>}
                                                                     />
-                                                                    <p className="text-gray-700">{comment.comment}</p>
+                                                                    <p className="text-gray-700 break-all  whitespace-normal max-w-full">{comment.comment}</p>
                                                                 </div>
                                                                 <p className="text-gray-500 text-[.6rem]">
                                                                     {new Intl.DateTimeFormat('en-US', {
@@ -232,23 +251,26 @@ export default function UserfypClient({userImage, userName}) {
                                                             </div>
                                                         ))
                                                 ) : (
-                                                    <p className="text-gray-500 italic">No comments yet</p>
+                                                    <p className="text-gray-500 italic">No comments yet. be the
+                                                        first!</p>
                                                 )}
                                             </div>
                                         </ModalBody>
                                         <ModalFooter>
-                                            <div className="flex w-full flex-wrap md:flex-nowrap items-center">
+                                            <div className="flex w-full  flex-wrap md:flex-nowrap items-center">
                                                 <input
                                                     value={postComment}
                                                     onChange={handleInputChange} // Pass the event directly
                                                     type="text"
-                                                    placeholder="Write your comment"
+                                                    placeholder="Write your comment here..."
                                                     className="flex-1 border rounded px-2 py-1"
                                                 />
                                                 <div
                                                     onClick={() => {
-                                                        onClose()
-                                                        handlePostComment(post.id)
+                                                        handlePostComment(post.id).then(
+                                                            onClose()
+                                                        )
+
                                                     }}
 
                                                     className="flex justify-center items-center cursor-pointer"
