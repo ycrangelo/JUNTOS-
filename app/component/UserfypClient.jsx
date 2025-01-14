@@ -26,6 +26,7 @@ export default function UserfypClient({userImage, userName}) {
     const [getComment, getSetComments] = useState([]);
     const [postComment, postSetComments] = useState("");
     const [showToast, setShowToast] = useState(false); // State for toast
+    const [postIdComment, setPostIdComment] = useState("");
 
 
     const handleInputChange = (e) => {
@@ -58,7 +59,7 @@ export default function UserfypClient({userImage, userName}) {
     //dito ka tingin
     const fetchComments = async (postId) => {
         try {
-            console.log(postId)
+            setPostIdComment(postId)
             const response = await axios.get(
                 `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/comments/get`,
                 {
@@ -76,13 +77,13 @@ export default function UserfypClient({userImage, userName}) {
 
     //handle the POST req
     //nagana na to
-    const handlePostComment = async (postId) => {
+    const handlePostComment = async () => {
         try {
 
             const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_BASE_URL}/api/database/fyp/comments/post`,
                 {
-                    postId,
+                    postId: postIdComment,
                     userName,
                     userImage,
                     comment: postComment, // Ensure key matches backend expectations
@@ -126,7 +127,7 @@ export default function UserfypClient({userImage, userName}) {
         const intervalId = setInterval(() => {
             fetchPosts();
             console.log(" polling")
-        }, 5000); // Poll every 6 seconds
+        }, 10000); // Poll every 10 seconds
 
         const handleResize = () => setWindowWidth(window.innerWidth);
         handleResize();
@@ -149,11 +150,12 @@ export default function UserfypClient({userImage, userName}) {
 
     return (
         <div className="flex flex-col items-center min-h-screen mb-[4rem] mt-[2rem]">
+
             <div className="w-full max-w-screen-sm lg:max-w-screen-md flex flex-col gap-5">
                 {/* Toast Notification */}
                 {showToast && (
                     <div
-                        className="absolute top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded shadow-md transition-opacity duration-300">
+                        className="sticky top-0 bg-green-500 text-white px-4 py-2 rounded shadow-md transition-opacity duration-300">
                         Comment posted successfully!
                     </div>
                 )}
@@ -184,7 +186,7 @@ export default function UserfypClient({userImage, userName}) {
                                 onError={() => console.log("Image failed to load")}
                             />
                         ) : (
-                            <p className="text-gray-500 italic">No image available</p>
+                            <p></p>
                         )}
                         <div className="pt-2 flex flex-row gap-2 items-center">
                             <p>{post.likes}</p>
@@ -260,17 +262,14 @@ export default function UserfypClient({userImage, userName}) {
                                             <div className="flex w-full  flex-wrap md:flex-nowrap items-center">
                                                 <input
                                                     value={postComment}
-                                                    onChange={handleInputChange} // Pass the event directly
+                                                    onChange={handleInputChange}
                                                     type="text"
                                                     placeholder="Write your comment here..."
                                                     className="flex-1 border rounded px-2 py-1"
                                                 />
                                                 <div
                                                     onClick={() => {
-                                                        handlePostComment(post.id).then(
-                                                            onClose()
-                                                        )
-
+                                                        handlePostComment().then(onClose())
                                                     }}
 
                                                     className="flex justify-center items-center cursor-pointer"
