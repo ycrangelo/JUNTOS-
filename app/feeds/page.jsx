@@ -12,14 +12,9 @@ export default async function page() {
     const userImage = await session.user.image
     return (
         <>
-            <div className='min-w-max min-h-screen flex items-center justify-center'>
-                <div className='lg:w-[60%] min-h-screen w-screen border-x'>
-                    <Navbar/>
+           
                     <Userfyp userImage={userImage} userName={emailto}/>
-                    
-                    <AddPostUi email={emailto} userImage={userImage}/>
-                </div>
-            </div>
+              
         </>
     )
 }

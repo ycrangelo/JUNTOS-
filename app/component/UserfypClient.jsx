@@ -124,10 +124,10 @@ export default function UserfypClient({userImage, userName}) {
     useEffect(() => {
         fetchPosts();
 
-        const intervalId = setInterval(() => {
-            fetchPosts();
-            console.log(" polling")
-        }, 10000); // Poll every 10 seconds
+        // const intervalId = setInterval(() => {
+        //     fetchPosts();
+        //     console.log(" polling")
+        // }, 10000); // Poll every 10 seconds
 
         const handleResize = () => setWindowWidth(window.innerWidth);
         handleResize();
@@ -149,7 +149,7 @@ export default function UserfypClient({userImage, userName}) {
     const isMobile = windowWidth <= 768;
 
     return (
-        <div className="flex flex-col items-center min-h-screen mb-[4rem] mt-[2rem]">
+        <div className="flex flex-col items-center min-h-screen mb-[6rem] mt-[2rem]">
 
             <div className="w-full max-w-screen-sm lg:max-w-screen-md flex flex-col gap-5">
                 {/* Toast Notification */}

@@ -1,5 +1,7 @@
 'use client';
 
+//lagyan mo picture kada post tanga mo ogel
+
 import {
     Button,
     Input,

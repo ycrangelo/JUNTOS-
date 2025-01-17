@@ -1,10 +1,12 @@
-import localFont from "next/font/local";
-import "./globals.css";
-import { AppWrapper } from '../app/context'; // Ensure correct path
 import { NextUIProvider } from "@nextui-org/react";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import localFont from "next/font/local";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "../app/api/uploadthing/core";
+import AddPostUi from "../app/component/AddPostUi";
+import Navbar from "../app/component/Navbar";
+import { AppWrapper } from '../app/context'; // Ensure correct path
+import "./globals.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,7 +33,13 @@ export default function RootLayout({ children }) {
         />
         <AppWrapper>
           <NextUIProvider>
-            {children}
+            <Navbar />
+             <div className='min-w-max min-h-screen flex items-center justify-center'>
+              <div className='lg:w-[60%] min-h-screen w-screen border-x'>
+                   {children}
+              </div>
+               </div>
+               <AddPostUi/>
           </NextUIProvider>
         </AppWrapper>
       </body>
